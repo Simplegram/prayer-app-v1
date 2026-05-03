@@ -36,7 +36,9 @@ export function render(root, subfolderId) {
         return;
       }
 
-      document.getElementById('subfolder-title').textContent = subfolder.name;
+      const folder = await db.folders.get(subfolder.folderId);
+      const titleEl = document.getElementById('subfolder-title');
+      titleEl.textContent = folder ? `${folder.name}/${subfolder.name}` : subfolder.name;
 
       const prayers = await db.prayers.where('subfolderId').equals(subfolderId).toArray();
 
