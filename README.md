@@ -43,3 +43,7 @@ Use the admin panel to import prayers as a JSON array:
     "content": "...prayer text here..." 
   }
 ]
+
+## Credits
+
+This project was developed using [Kilo](https://kilo.ai), a local coding agent, powered by the Qwen3.6-27B model. All code generation and project scaffolding were handled locally on the developer's machine.
