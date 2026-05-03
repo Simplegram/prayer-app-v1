@@ -45,31 +45,104 @@ export function render(root) {
   const form = document.createElement('form');
   form.className = 'space-y-5';
 
-  const fields = [
-    { name: 'title', label: 'Prayer Title', type: 'text', required: true },
-    { name: 'folderName', label: 'Folder Name', type: 'text', required: true },
-    { name: 'subfolderName', label: 'Subfolder Name', type: 'text', required: true },
-  ];
+  // Title field (text input)
+  const titleGroup = document.createElement('div');
+  const titleLabel = document.createElement('label');
+  titleLabel.htmlFor = 'title';
+  titleLabel.className = 'block text-lg font-semibold mb-2';
+  titleLabel.textContent = 'Prayer Title';
 
-  fields.forEach(({ name, label, type, required }) => {
-    const group = document.createElement('div');
+  const titleInput = document.createElement('input');
+  titleInput.id = 'title';
+  titleInput.name = 'title';
+  titleInput.type = 'text';
+  titleInput.required = true;
+  titleInput.className = 'w-full px-4 py-3 text-xl border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-200 min-h-[60px]';
 
-    const labelEl = document.createElement('label');
-    labelEl.htmlFor = name;
-    labelEl.className = 'block text-lg font-semibold mb-2';
-    labelEl.textContent = label;
+  titleGroup.appendChild(titleLabel);
+  titleGroup.appendChild(titleInput);
+  form.appendChild(titleGroup);
 
-    const input = document.createElement('input');
-    input.id = name;
-    input.name = name;
-    input.type = type;
-    input.required = required;
-    input.className = 'w-full px-4 py-3 text-xl border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-200 min-h-[60px]';
+  // Folder field (input with datalist for existing folders)
+  const folderGroup = document.createElement('div');
+  const folderLabel = document.createElement('label');
+  folderLabel.htmlFor = 'folderName';
+  folderLabel.className = 'block text-lg font-semibold mb-2';
+  folderLabel.textContent = 'Folder Name';
 
-    group.appendChild(labelEl);
-    group.appendChild(input);
-    form.appendChild(group);
-  });
+  const folderInput = document.createElement('input');
+  folderInput.id = 'folderName';
+  folderInput.name = 'folderName';
+  folderInput.type = 'text';
+  folderInput.required = true;
+  folderInput.setAttribute('list', 'folder-options');
+  folderInput.className = 'w-full px-4 py-3 text-xl border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-200 min-h-[60px]';
+
+  const folderDatalist = document.createElement('datalist');
+  folderDatalist.id = 'folder-options';
+
+  folderGroup.appendChild(folderLabel);
+  folderGroup.appendChild(folderInput);
+  folderGroup.appendChild(folderDatalist);
+  form.appendChild(folderGroup);
+
+  // Subfolder field (input with datalist, optional)
+  const subfolderGroup = document.createElement('div');
+  const subfolderLabel = document.createElement('label');
+  subfolderLabel.htmlFor = 'subfolderName';
+  subfolderLabel.className = 'block text-lg font-semibold mb-2';
+  subfolderLabel.textContent = 'Subfolder Name (optional)';
+
+  const subfolderInput = document.createElement('input');
+  subfolderInput.id = 'subfolderName';
+  subfolderInput.name = 'subfolderName';
+  subfolderInput.type = 'text';
+  subfolderInput.required = false;
+  subfolderInput.setAttribute('list', 'subfolder-options');
+  subfolderInput.className = 'w-full px-4 py-3 text-xl border-2 border-gray-300 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-200 min-h-[60px]';
+
+  const subfolderDatalist = document.createElement('datalist');
+  subfolderDatalist.id = 'subfolder-options';
+
+  subfolderGroup.appendChild(subfolderLabel);
+  subfolderGroup.appendChild(subfolderInput);
+  subfolderGroup.appendChild(subfolderDatalist);
+  form.appendChild(subfolderGroup);
+
+  // Load existing folders into datalist on mount and when folder input gets focus
+  async function loadFolderOptions() {
+    const folders = await db.folders.orderBy('name').toArray();
+    console.log(folders)
+    folderDatalist.innerHTML = '';
+    for (const f of folders) {
+      const opt = document.createElement('option');
+      opt.value = f.name;
+      folderDatalist.appendChild(opt);
+    }
+  }
+
+  async function loadSubfolderOptions(folderName) {
+    console.log(folderName)
+    subfolderDatalist.innerHTML = '';
+
+    if (!folderName || !folderName.trim()) return;
+
+    const folder = await db.folders.where('name').equals(folderName.trim()).first();
+    if (!folder) return;
+
+    const subfolders = await db.subfolders.where('folderId').equals(folder.id).orderBy('name').toArray();
+    console.log(subfolders)
+    for (const s of subfolders) {
+      const opt = document.createElement('option');
+      opt.value = s.name;
+      subfolderDatalist.appendChild(opt);
+    }
+  }
+
+  folderInput.addEventListener('input', () => loadSubfolderOptions(folderInput.value));
+
+  // Reload folder options on form focus to catch newly added folders
+  folderInput.addEventListener('focus', loadFolderOptions);
 
   const contentGroup = document.createElement('div');
   const contentLabel = document.createElement('label');
@@ -210,7 +283,10 @@ export function render(root) {
       await addPrayer(prayerData);
       status.textContent = 'Prayer saved successfully!';
       status.className = 'text-center text-lg py-4 text-green-600 font-bold';
-      form.reset();
+      titleInput.value = '';
+      folderInput.value = '';
+      subfolderInput.value = '';
+      textarea.value = '';
 
       setTimeout(() => {
         status.textContent = '';
@@ -225,6 +301,9 @@ export function render(root) {
   });
 
   root.appendChild(container);
+
+  // Load folder options after DOM is mounted so datalist is in the document
+  loadFolderOptions();
 
   return function cleanup() {};
 }
