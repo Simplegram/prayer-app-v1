@@ -3,7 +3,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import legacy from '@vitejs/plugin-legacy';
 
 export default defineConfig({
-  base: '/prayer-app/',
+  base: '/prayer-app-v1/',
   plugins: [
     legacy({
       targets: ['defaults', 'not IE 11'],
@@ -17,7 +17,8 @@ export default defineConfig({
         name: 'Prayer Book',
         short_name: 'Prayers',
         description: 'A simple offline prayer reader',
-        start_url: '/',
+        start_url: '/prayer-app-v1/',
+
         display: 'standalone',
         background_color: '#FFFDF5',
         theme_color: '#3B82F6',
