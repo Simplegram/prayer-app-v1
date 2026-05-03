@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Accessibility: visible focus outlines */
+*:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Minimum touch targets for accessibility */
+button, a.btn {
+  min-height: 60px;
+  min-width: 60px;
+}
+
+/* Prayer text readability */
+.prayer-text {
+  font-size: clamp(24px, 5vw, 32px);
+  line-height: 1.7;
+}
+
+/* Swiper overrides for full-screen reader */
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Smooth transitions for view changes */
+#app {
+  min-height: 100vh;
+}
+
+/* High contrast links */
+a {
+  color: #1d4ed8;
+}
+
+a:hover {
+  color: #1e40af;
+}
