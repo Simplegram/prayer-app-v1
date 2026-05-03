@@ -44,9 +44,10 @@ async function render() {
 }
 
 export const app = {
-   init() {
+  init() {
     window.addEventListener('hashchange', render);
-
+    render();
+  },
 };
 
 export function go(hash) {
