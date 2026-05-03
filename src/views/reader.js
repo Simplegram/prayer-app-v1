@@ -35,7 +35,7 @@ export function render(root, subfolderId) {
 
   const titleBar = document.createElement('div');
   titleBar.id = 'reader-title';
-  titleBar.className = 'text-center text-xl font-bold px-4 py-2 border-b border-gray-100';
+  titleBar.className = 'text-center text-4xl font-bold px-4 py-2 border-b border-gray-100';
 
   header.appendChild(titleBar);
   container.appendChild(header);
@@ -99,15 +99,10 @@ export function render(root, subfolderId) {
         const contentDiv = document.createElement('div');
         contentDiv.className = 'h-full overflow-y-auto px-6 py-8 flex flex-col';
 
-        const titleEl = document.createElement('h2');
-        titleEl.className = 'text-3xl font-bold mb-6 text-center';
-        titleEl.textContent = prayer.title;
-
         const bodyEl = document.createElement('div');
         bodyEl.className = 'prayer-text text-black leading-relaxed flex-1 whitespace-pre-wrap';
         bodyEl.textContent = prayer.content;
 
-        contentDiv.appendChild(titleEl);
         contentDiv.appendChild(bodyEl);
         slide.appendChild(contentDiv);
         wrapper.appendChild(slide);
