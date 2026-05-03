@@ -43,6 +43,7 @@ Use the admin panel to import prayers as a JSON array:
     "content": "...prayer text here..." 
   }
 ]
+```
 
 ## Credits
 
