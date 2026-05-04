@@ -39,16 +39,52 @@ export function render(root, folderId) {
       document.getElementById('folder-title').textContent = folder.name;
 
       const subfolders = await db.subfolders.where('folderId').equals(folderId).toArray();
+      const namedSubfolders = subfolders.filter((subfolder) => subfolder.name?.trim());
 
-      if (subfolders.length === 0) {
-        main.innerHTML = '<p class="text-center text-xl py-8 text-gray-500">No subfolders in this folder.</p>';
+      if (namedSubfolders.length === 0) {
+        const prayers = await db.prayers.where('folderId').equals(folderId).toArray();
+
+        if (prayers.length === 0) {
+          main.innerHTML = '<p class="text-center text-xl py-8 text-gray-500">No prayers in this folder.</p>';
+          return;
+        }
+
+        const readAllBtn = document.createElement('a');
+        readAllBtn.href = `#/read/folder/${folderId}`;
+        readAllBtn.className = 'block w-full bg-blue-600 text-white text-xl font-bold py-4 rounded-lg text-center mb-6 min-h-[64px] hover:bg-blue-700 active:bg-blue-800';
+        readAllBtn.textContent = `Read All (${prayers.length} prayers)`;
+
+        main.appendChild(readAllBtn);
+
+        const prayerGrid = document.createElement('div');
+        prayerGrid.className = 'grid gap-4';
+
+        for (const prayer of prayers) {
+          const card = document.createElement('a');
+          card.href = `#/read/folder/${folderId}`;
+          card.className = 'block bg-white border-2 border-gray-200 rounded-xl px-6 py-5 min-h-[80px] flex items-center justify-between hover:border-blue-400 active:bg-blue-50';
+
+          const title = document.createElement('span');
+          title.className = 'text-xl font-bold';
+          title.textContent = prayer.title;
+
+          const arrow = document.createElement('span');
+          arrow.className = 'text-3xl text-gray-400';
+          arrow.innerHTML = '&rarr;';
+
+          card.appendChild(title);
+          card.appendChild(arrow);
+          prayerGrid.appendChild(card);
+        }
+
+        main.appendChild(prayerGrid);
         return;
       }
 
       const grid = document.createElement('div');
       grid.className = 'grid gap-4';
 
-      for (const subfolder of subfolders) {
+      for (const subfolder of namedSubfolders) {
         const count = await db.prayers.where('subfolderId').equals(subfolder.id).count();
 
         const card = document.createElement('a');

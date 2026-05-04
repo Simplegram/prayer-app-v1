@@ -16,28 +16,27 @@ async function render() {
   root.innerHTML = '';
 
   if (hash === '#/' || hash === '') {
-    const { render: renderLibrary, cleanup } = await import('./views/library.js');
-    renderLibrary(root);
-    currentCleanup = cleanup;
+    const { render: renderLibrary } = await import('./views/library.js');
+    currentCleanup = renderLibrary(root);
   } else if (hash.startsWith('#/folder/')) {
     const folderId = parseInt(hash.split('/')[2], 10);
-    const { render: renderFolder, cleanup } = await import('./views/folder.js');
-    renderFolder(root, folderId);
-    currentCleanup = cleanup;
+    const { render: renderFolder } = await import('./views/folder.js');
+    currentCleanup = renderFolder(root, folderId);
   } else if (hash.startsWith('#/subfolder/')) {
     const subfolderId = parseInt(hash.split('/')[2], 10);
-    const { render: renderSubfolder, cleanup } = await import('./views/subfolder.js');
-    renderSubfolder(root, subfolderId);
-    currentCleanup = cleanup;
+    const { render: renderSubfolder } = await import('./views/subfolder.js');
+    currentCleanup = renderSubfolder(root, subfolderId);
+  } else if (hash.startsWith('#/read/folder/')) {
+    const folderId = parseInt(hash.split('/')[3], 10);
+    const { render: renderReader } = await import('./views/reader.js');
+    currentCleanup = renderReader(root, folderId, 'folder');
   } else if (hash.startsWith('#/read/')) {
     const subfolderId = parseInt(hash.split('/')[2], 10);
-    const { render: renderReader, cleanup } = await import('./views/reader.js');
-    renderReader(root, subfolderId);
-    currentCleanup = cleanup;
+    const { render: renderReader } = await import('./views/reader.js');
+    currentCleanup = renderReader(root, subfolderId);
   } else if (hash === '#/admin') {
-    const { render: renderAdmin, cleanup } = await import('./views/admin.js');
-    renderAdmin(root);
-    currentCleanup = cleanup;
+    const { render: renderAdmin } = await import('./views/admin.js');
+    currentCleanup = renderAdmin(root);
   }
 
   window.scrollTo(0, 0);

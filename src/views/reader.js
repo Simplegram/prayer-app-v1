@@ -5,7 +5,7 @@ import 'swiper/swiper-bundle.css';
 
 let swiperInstance = null;
 
-export function render(root, subfolderId) {
+export function render(root, collectionId, collectionType = 'subfolder') {
   const container = document.createElement('div');
   container.className = 'fixed inset-0 bg-cream z-50 flex flex-col';
 
@@ -76,7 +76,9 @@ export function render(root, subfolderId) {
 
   async function loadPrayers() {
     try {
-      const prayers = await db.prayers.where('subfolderId').equals(subfolderId).toArray();
+      const prayers = collectionType === 'folder'
+        ? await db.prayers.where('folderId').equals(collectionId).toArray()
+        : await db.prayers.where('subfolderId').equals(collectionId).toArray();
 
       if (prayers.length === 0) {
         wrapper.innerHTML = `
